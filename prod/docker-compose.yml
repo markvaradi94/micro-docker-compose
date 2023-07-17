@@ -1,0 +1,110 @@
+version: '3.9'
+services:
+  accounts:
+    container_name: micro-accounts
+    image: markvaradi94/micro-accounts:latest
+    mem_reservation: 700m
+    ports:
+      - "9091:9091"
+    environment:
+      - DATABASE_HOST=bank-db
+      - DATABASE_PORT=3306
+      - DATABASE_USER=bank
+      - DATABASE_PASSWORD=password
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071/
+      - SPRING_APPLICATION_NAME=accounts
+    depends_on:
+      - bank-db
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - micro-bank-network
+
+  loans:
+    container_name: micro-loans
+    image: markvaradi94/micro-loans:latest
+    mem_reservation: 700m
+    ports:
+      - "9092:9092"
+    environment:
+      - DATABASE_HOST=bank-db
+      - DATABASE_PORT=3306
+      - DATABASE_USER=bank
+      - DATABASE_PASSWORD=password
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071/
+      - SPRING_APPLICATION_NAME=loans
+    depends_on:
+      - bank-db
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - micro-bank-network
+
+  cards:
+    container_name: micro-cards
+    image: markvaradi94/micro-cards:latest
+    mem_reservation: 700m
+    ports:
+      - "9093:9093"
+    environment:
+      - DATABASE_HOST=bank-db
+      - DATABASE_PORT=3306
+      - DATABASE_USER=bank
+      - DATABASE_PASSWORD=password
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8071/
+      - SPRING_APPLICATION_NAME=cards
+    depends_on:
+      - bank-db
+      - config-server
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - micro-bank-network
+
+  config-server:
+    container_name: micro-config-server
+    image: markvaradi94/micro-config-server:latest
+    mem_reservation: 700m
+    ports:
+      - "8071:8071"
+    networks:
+      - micro-bank-network
+
+  bank-db:
+    container_name: bank-db
+    image: mysql:8-oracle
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: bank
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: bank
+    ports:
+      - "3306:3306"
+    volumes:
+      - bank-data:/var/lib/mysql
+    networks:
+      - micro-bank-network
+
+volumes:
+  bank-data:
+
+networks:
+  micro-bank-network:
