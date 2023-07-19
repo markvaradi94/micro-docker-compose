@@ -1,7 +1,7 @@
 version: '3.9'
 services:
   accounts:
-    container_name: micro-accounts
+    container_name: dev-accounts
     image: markvaradi94/micro-accounts:latest
     mem_reservation: 700m
     ports:
@@ -27,7 +27,7 @@ services:
       - micro-bank-network
 
   loans:
-    container_name: micro-loans
+    container_name: dev-loans
     image: markvaradi94/micro-loans:latest
     mem_reservation: 700m
     ports:
@@ -53,7 +53,7 @@ services:
       - micro-bank-network
 
   cards:
-    container_name: micro-cards
+    container_name: dev-cards
     image: markvaradi94/micro-cards:latest
     mem_reservation: 700m
     ports:
